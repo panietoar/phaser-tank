@@ -2,14 +2,15 @@
 BasicGame.Game = function (game) {
 	this.game = game;
 	this.blueTank = null;
-	this.speed = 4;
+	this.speed = 2;
 	this.fireSound = null;
 	this.fire = null;
+	this.cannon = null;
 	this.DIRECTIONS = {
-		'UP': 0,
-		'DOWN': 180,
-		'LEFT': -90,
-		'RIGHT': 90
+		'UP': -90,
+		'DOWN': 90,
+		'LEFT': 180,
+		'RIGHT': 0
 	};
 	this.DIRECTION_FRAMES = {
 		'up': 9,
@@ -26,7 +27,6 @@ var downKey;
 var leftKey;
 var rightKey;
 var spaceKey;
-var tankGroup;
 
 BasicGame.Game.prototype = {
 
@@ -34,15 +34,14 @@ BasicGame.Game.prototype = {
 		this.game.stage.backgroundColor = '#dddddd';
 
 
-		tankGroup = this.add.group();
 
 		this.blueTank = this.add.sprite(250, 584, 'blueTank');
 		this.blueTank.anchor.setTo(0.5, 0.5);
-		this.blueTank.frame = 9;
+		this.blueTank.frame = 6;
 
-		tankGroup.add(this.blueTank);
 
-		this.blueTank.animations.add('moving', [9, 10], 15, true);
+		this.blueTank.animations.add('moving', [6, 7], 5, true);
+		this.blueTank.animations.add('firing', [6, 8], 4, true);
 
 		this.fireSound = this.add.audio('fireSound');
 
@@ -53,8 +52,13 @@ BasicGame.Game.prototype = {
 		spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 		// Game init Code here.
-	},
 
+		this.cannon = this.add.weapon(1, 'shot');
+		this.cannon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
+		this.cannon.trackSprite(this.blueTank, 8, 0, true);
+		this.cannon.bulletSpeed = 350;
+
+	},
 
 	update: function () {
 
@@ -65,11 +69,13 @@ BasicGame.Game.prototype = {
 		}
 
 		if (spaceKey.justUp) {
-			this.fire = tankGroup.create(0, 0, 'fireExplosion');
-			this.blueTank.frame = this.DIRECTION_FRAMES[this.currentDirection + 2];
-			this.fireSound.play();
-		} else if(this.fire) {
-			this.fire.kill();
+			if (this.cannon.bullets.countLiving() === 0) {
+				this.blueTank.animations.play('firing');
+				this.fireSound.play();
+				this.fire = this.blueTank.addChild(this.make.sprite(8, -4, 'fireExplosion'));
+				this.fire.lifespan = 120;
+			}
+			this.cannon.fire();
 		}
 
 		if (leftKey.isDown && this.blueTank.x > 8) {
@@ -106,4 +112,5 @@ BasicGame.Game.prototype = {
 		//	Then let's go back to the main menu.
 		this.game.state.start('MainMenu');
 	}
+
 };
