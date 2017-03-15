@@ -1,0 +1,39 @@
+BasicGame = {};
+
+BasicGame.Boot = function (game) {
+    this.game = game;
+};
+
+BasicGame.Boot.prototype = {
+    preload: function () {
+
+        //  Here we load the assets required for our preloader (in this case a background and a loading bar)
+        //this.load.image('preloaderBackground', 'assets/img/water_texture.jpg');
+        //this.load.image('preloaderBar', 'assets/img/plane-sheet.png');
+
+    },
+
+    create: function () {
+        this.game.input.maxPointers = 1;
+        this.game.stage.disableVisibilityChange = true;
+
+        if (this.game.device.desktop) {
+            //  If you have any desktop specific settings, they can go in here
+            this.game.scale.pageAlignHorizontally = true;
+        }
+        else {
+            //  Same goes for mobile settings.
+            //  In this case we're saying "scale the game, no lower than 480x260 and no higher than 1024x768"
+            this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            this.game.scale.minWidth = 480;
+            this.game.scale.minHeight = 260;
+            this.game.scale.maxWidth = 1280;
+            this.game.scale.maxHeight = 720;            
+            this.game.scale.pageAlignHorizontally = true;
+            this.game.scale.pageAlignVertically = true;
+            this.game.scale.setScreenSize(true);
+        }
+
+        this.game.state.start('Preloader');
+    }
+};
