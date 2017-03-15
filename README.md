@@ -1,4 +1,8 @@
-# Phaser Boilerplate
+# Phaser Tank
+
+Project template taken from:
+
+https://github.com/appsbu-de/phaserBoilerplate
 
 This Boilerplate helps to get started with the fabulous HTML5 game framework [Phaser](http://www.phaser.io).
 Inspired by https://github.com/luizbills/phaser-js-boilerplate
