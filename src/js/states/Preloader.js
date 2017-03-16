@@ -12,7 +12,6 @@ BasicGame.Preloader = function (game) {
 BasicGame.Preloader.prototype = {
 
 	preload: function () {
-        //this.background = this.add.sprite(0, 0, 'preloaderBackground');
 		//this.preloadBar = this.add.sprite(300, 400, 'preloaderBar');
 
 		//this.load.setPreloadSprite(this.preloadBar);
@@ -20,9 +19,10 @@ BasicGame.Preloader.prototype = {
 		//	Here we load the rest of the assets our game needs.
 		this.load.image('titlepage', 'assets/img/title800.jpeg');
 		this.load.image('playButton', 'assets/img/playButton.png');
-		this.load.spritesheet('blueTank', 'assets/img/blue.png', 16, 16);
+		this.load.spritesheet('blueTank', 'assets/img/blue.png', 32, 32);
 		this.load.image('fireExplosion', 'assets/img/right.png');
 		this.load.image('shot', 'assets/img/shot.png');
+		this.load.image('grassField', 'assets/img/backgrounds/backgrounddetailed1.png');
 		//this.load.atlas('playButton', 'assets/img/x.png', 'assets/img/button_texture_atlas.json');
 
 		this.load.audio('fireSound', ['assets/audio/fire.wav']);

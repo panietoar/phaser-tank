@@ -7,6 +7,7 @@ var spaceKey;
 BasicGame.Game = function (game) {
 	this.game = game;
 	this.blueTank = null;
+	this.enemyTank = null;
 	this.speed = 2;
 	this.fireSound = null;
 	this.fire = null;
@@ -23,6 +24,10 @@ BasicGame.Game = function (game) {
 BasicGame.Game.prototype = {
 
 	create: function () {
+
+		this.add.tileSprite(0, 0, 800, 576, 'grassField');
+
+		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.game.stage.backgroundColor = '#dddddd';
 		this.fireSound = this.add.audio('fireSound');
 
@@ -41,39 +46,43 @@ BasicGame.Game.prototype = {
 
 		this.handleInput();
 
-		if (spaceKey.justUp) {
-			this.fireCannon();
-		}
+		this.physics.arcade.collide(this.blueTank, this.enemyTank);
 
+		this.physics.arcade.overlap(this.cannon.bullets, this.enemyTank, this.enemyImpactHandler, null, this);
 	},
 
 	fireCannon: function () {
 		if (this.cannon.bullets.countLiving() === 0) {
 			this.blueTank.animations.play('firing');
 			this.fireSound.play();
-			this.fire = this.blueTank.addChild(this.make.sprite(8, -4, 'fireExplosion'));
+			this.fire = this.blueTank.addChild(this.make.sprite(16, -8, 'fireExplosion'));
 			this.fire.lifespan = 120;
 		}
 		this.cannon.fire();
 	},
 
 	handleInput: function () {
-		if (leftKey.isDown && this.blueTank.x > 16) {
+
+		if (spaceKey.justUp) {
+			this.fireCannon();
+		}
+
+		if (leftKey.isDown) {
 			this.blueTank.angle = this.DIRECTIONS.LEFT;
 			this.blueTank.x -= this.speed;
 			this.moving = true;
 		}
-		else if (rightKey.isDown && this.blueTank.x < 784) {
+		else if (rightKey.isDown) {
 			this.blueTank.angle = this.DIRECTIONS.RIGHT;
 			this.blueTank.x += this.speed;
 			this.moving = true;
 		}
-		else if (upKey.isDown && this.blueTank.y > 16) {
+		else if (upKey.isDown) {
 			this.blueTank.angle = this.DIRECTIONS.UP;
 			this.blueTank.y -= this.speed;
 			this.moving = true;
 		}
-		else if (downKey.isDown && this.blueTank.y < 584) {
+		else if (downKey.isDown) {
 			this.blueTank.angle = this.DIRECTIONS.DOWN;
 			this.blueTank.y += this.speed;
 			this.moving = true;
@@ -85,10 +94,13 @@ BasicGame.Game.prototype = {
 	createTank: function () {
 		this.blueTank = this.add.sprite(16, 584, 'blueTank');
 		this.blueTank.anchor.setTo(0.5, 0.5);
-		this.blueTank.frame = 7;
-		this.blueTank.scale.setTo(2, 2);
-		this.blueTank.animations.add('moving', [7, 6], 10, true);
-		this.blueTank.animations.add('firing', [7, 8], 20, true);
+		this.blueTank.animations.add('moving', [1, 0], 15, true);
+		this.blueTank.animations.add('firing', [0, 2], 20, true);
+
+		this.enemyTank = this.add.sprite(300, 384, 'blueTank');
+		this.physics.arcade.enable([this.blueTank, this.enemyTank]);
+		this.enemyTank.body.immovable = true;
+		this.blueTank.body.collideWorldBounds = true;
 	},
 
 	createInput: function () {
@@ -99,11 +111,16 @@ BasicGame.Game.prototype = {
 		spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	},
 
-	createCannon: function() {
+	createCannon: function () {
 		this.cannon = this.add.weapon(1, 'shot');
 		this.cannon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
-		this.cannon.trackSprite(this.blueTank, 16, 0, true);
+		this.cannon.trackSprite(this.blueTank, 32, 0, true);
 		this.cannon.bulletSpeed = 350;
+	},
+
+	enemyImpactHandler: function(bullet, enemy) {
+		bullet.kill();
+		enemy.kill();
 	},
 
 	quitGame: function (pointer) {
