@@ -12,6 +12,7 @@ BasicGame.Game = function (game) {
 	this.fireSound = null;
 	this.fire = null;
 	this.cannon = null;
+	this.explotion = null;
 	this.DIRECTIONS = {
 		'UP': -90,
 		'DOWN': 90,
@@ -53,9 +54,9 @@ BasicGame.Game.prototype = {
 
 	fireCannon: function () {
 		if (this.cannon.bullets.countLiving() === 0) {
+			this.fire = this.blueTank.addChild(this.make.sprite(16, -8, 'fireExplotion'));
 			this.blueTank.animations.play('firing');
 			this.fireSound.play();
-			this.fire = this.blueTank.addChild(this.make.sprite(16, -8, 'fireExplosion'));
 			this.fire.lifespan = 120;
 		}
 		this.cannon.fire();
@@ -96,9 +97,14 @@ BasicGame.Game.prototype = {
 		this.blueTank.anchor.setTo(0.5, 0.5);
 		this.blueTank.animations.add('moving', [1, 0], 15, true);
 		this.blueTank.animations.add('firing', [0, 2], 20, true);
+		this.blueTank.animations.add('explotion', [3, 4, 5, 6, 7], 20, false);
+		this.createEnemyTank();
+	},
 
-		this.enemyTank = this.add.sprite(300, 384, 'blueTank');
+	createEnemyTank: function () {
+		this.enemyTank = this.add.sprite(this.world.randomX, this.world.randomY, 'blueTank');
 		this.physics.arcade.enable([this.blueTank, this.enemyTank]);
+		this.explotion = this.enemyTank.animations.add('explotion', [3, 4, 5, 6, 7], 20, false);
 		this.enemyTank.body.immovable = true;
 		this.blueTank.body.collideWorldBounds = true;
 	},
@@ -118,9 +124,10 @@ BasicGame.Game.prototype = {
 		this.cannon.bulletSpeed = 350;
 	},
 
-	enemyImpactHandler: function(bullet, enemy) {
+	enemyImpactHandler: function (enemy, bullet) {
 		bullet.kill();
-		enemy.kill();
+		this.explotion.play(10, false, true);
+		this.createEnemyTank();
 	},
 
 	quitGame: function (pointer) {
