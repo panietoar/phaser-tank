@@ -20,6 +20,7 @@ BasicGame.Preloader.prototype = {
 		this.load.image('titlepage', 'assets/img/title800.jpeg');
 		this.load.image('playButton', 'assets/img/playButton.png');
 		this.load.spritesheet('blueTank', 'assets/img/blue.png', 32, 32);
+		this.load.spritesheet('redTank', 'assets/img/red.png', 32, 32);
 		this.load.image('fireExplotion', 'assets/img/right.png');
 		this.load.image('shot', 'assets/img/shot.png');
 		this.load.image('grassField', 'assets/img/backgrounds/backgrounddetailed1.png');
